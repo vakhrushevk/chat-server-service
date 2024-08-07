@@ -1,4 +1,6 @@
 LOCAL_BIN:=$(CURDIR)/bin
+run-app:
+	go run cmd/grpc_server/main.go
 
 install-deps:
 	GOBIN=$(LOCAL_BIN) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.1
