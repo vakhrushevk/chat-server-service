@@ -3,22 +3,23 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+	"net"
+
 	"github.com/vakhrushevk/chat-server-service/pkg/chat_v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"log"
-	"net"
 )
 
-const grpcPort = ":50052"
+const grpcPort = "50052"
 
 type server struct {
 	chat_v1.UnimplementedChatV1Server
 }
 
 func main() {
-	lis, err := net.Listen("tcp", fmt.Sprintf("%s", grpcPort))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", grpcPort))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
