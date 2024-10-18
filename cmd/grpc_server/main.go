@@ -4,10 +4,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/vakhrushevk/chat-server-service/internal/config"
-	"github.com/vakhrushevk/chat-server-service/internal/config/env"
 	"log"
 	"net"
+
+	"github.com/vakhrushevk/chat-server-service/internal/config"
+	"github.com/vakhrushevk/chat-server-service/internal/config/env"
 
 	"github.com/vakhrushevk/chat-server-service/pkg/chat_v1"
 	"google.golang.org/grpc"

@@ -2,9 +2,10 @@ package env
 
 import (
 	"errors"
-	"github.com/vakhrushevk/chat-server-service/internal/config"
 	"net"
 	"os"
+
+	"github.com/vakhrushevk/chat-server-service/internal/config"
 )
 
 var _ config.GRPCConfig = (*grpcConfig)(nil)

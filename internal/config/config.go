@@ -2,10 +2,12 @@ package config
 
 import "github.com/joho/godotenv"
 
+// PgConfig -
 type PgConfig interface {
 	DSN() string
 }
 
+// GRPCConfig -
 type GRPCConfig interface {
 	Address() string
 }
