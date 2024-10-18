@@ -2,7 +2,10 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
+	"github.com/vakhrushevk/chat-server-service/internal/config"
+	"github.com/vakhrushevk/chat-server-service/internal/config/env"
 	"log"
 	"net"
 
@@ -12,14 +15,35 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-const grpcPort = "50052"
+var configPath string
+
+func init() {
+	flag.StringVar(&configPath, "config-path", ".env", "path to config file")
+}
 
 type server struct {
 	chat_v1.UnimplementedChatV1Server
 }
 
 func main() {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", grpcPort))
+
+	flag.Parse()
+	err := config.Load(configPath)
+	if err != nil {
+		log.Fatalf("Failed to load config %v", err)
+	}
+	grpcConfig, err := env.NewGRPCConfig()
+	if err != nil {
+		log.Fatalf("failed to load grpcConfig: %v", err)
+	}
+	pgConfig, err := env.NewPGConfig()
+
+	if err != nil {
+		log.Fatalf("failed to load pgConfig: %v", err)
+	}
+	_ = pgConfig
+
+	lis, err := net.Listen("tcp", grpcConfig.Address())
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
