@@ -4,12 +4,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
+	"net"
+
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/vakhrushevk/chat-server-service/internal/repository"
 	"github.com/vakhrushevk/chat-server-service/internal/repository/model"
 	"github.com/vakhrushevk/chat-server-service/internal/repository/postgres"
-	"log"
-	"net"
 
 	"github.com/vakhrushevk/chat-server-service/internal/config"
 	"github.com/vakhrushevk/chat-server-service/internal/config/env"
@@ -32,7 +33,6 @@ type server struct {
 }
 
 func main() {
-
 	flag.Parse()
 	err := config.Load(configPath)
 	if err != nil {
@@ -60,6 +60,9 @@ func main() {
 	ctx := context.Background()
 
 	pool, err := pgxpool.Connect(ctx, pgConfig.DSN())
+	if err != nil {
+		log.Fatal(err)
+	}
 	rep := postgres.NewRepository(pool)
 
 	srver := &server{chatRepository: rep}
@@ -91,7 +94,7 @@ func (s *server) CreateChat(ctx context.Context, request *chat_v1.CreateChatRequ
 // It takes context.Context. and a request for create message *chat_v1.SendMessageRequest.
 func (s *server) SendMessage(ctx context.Context, request *chat_v1.SendMessageRequest) (*emptypb.Empty, error) {
 	fmt.Printf("Send Message: %v", request)
-	message := model.Message{Text: request.Text, Sender: request.FromIdUser, IdChat: request.IdChat}
+	message := model.Message{Text: request.Text, Sender: request.FromIdUser, IDChat: request.IdChat}
 	err := s.chatRepository.SendMessage(ctx, message)
 	if err != nil {
 		return nil, err

@@ -3,11 +3,12 @@ package postgres
 import (
 	"context"
 	"errors"
+	"log"
+
 	"github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/vakhrushevk/chat-server-service/internal/repository"
 	"github.com/vakhrushevk/chat-server-service/internal/repository/model"
-	"log"
 )
 
 const (
@@ -33,7 +34,7 @@ func NewRepository(db *pgxpool.Pool) repository.ChatRepository {
 }
 
 // CreateChat -
-func (r *repo) CreateChat(ctx context.Context, chat model.Chat, userId []int64) (int64, error) {
+func (r *repo) CreateChat(ctx context.Context, chat model.Chat, userID []int64) (int64, error) {
 	if chat.Name == "" {
 		return 0, errors.New("chat name cannot be empty")
 	}
@@ -59,13 +60,16 @@ func (r *repo) CreateChat(ctx context.Context, chat model.Chat, userId []int64) 
 		return 0, err
 	}
 
-	for _, user := range userId {
-		query, args, err := squirrel.
+	for _, user := range userID {
+		query, args, err = squirrel.
 			Insert(tableNameChatUser).
 			Columns(idUserColumnChatUser, idChatColumnChatUser).
 			PlaceholderFormat(squirrel.Dollar).
 			Values(user, id).
 			ToSql()
+		if err != nil {
+			return 0, err
+		}
 
 		log.Println("Query to add users to chat:", query, args)
 
@@ -82,7 +86,7 @@ func (r *repo) SendMessage(ctx context.Context, message model.Message) error {
 	query, args, err := squirrel.
 		Insert(tableNameMessages).
 		Columns(senderColumnMessages, textColumnMessages, idChatColumnMessages).
-		Values(message.Sender, message.Text, message.IdChat).
+		Values(message.Sender, message.Text, message.IDChat).
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
 	if err != nil {
