@@ -8,6 +8,7 @@
         id serial primary key,
         id_chat integer references chat(id) on delete cascade,
         id_user integer
+
     );
 
     create table messages(
