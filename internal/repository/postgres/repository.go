@@ -34,9 +34,9 @@ func NewRepository(db *pgxpool.Pool) repository.ChatRepository {
 }
 
 // CreateChat -
-func (r *repo) CreateChat(ctx context.Context, chat model.Chat, userID []int64) (int64, error) {
+func (r *repo) CreateChat(ctx context.Context, chat model.RepoChat, userID []int64) (int64, error) {
 	if chat.Name == "" {
-		return 0, errors.New("chat name cannot be empty")
+		return 0, errors.New("chatservice name cannot be empty")
 	}
 
 	query, args, err := squirrel.
@@ -47,7 +47,7 @@ func (r *repo) CreateChat(ctx context.Context, chat model.Chat, userID []int64) 
 		Suffix("returning id").
 		ToSql()
 
-	log.Println("Generated query to create a new chat:", query, args)
+	log.Println("Generated query to create a new chatservice:", query, args)
 
 	if err != nil {
 		return 0, err
@@ -56,7 +56,7 @@ func (r *repo) CreateChat(ctx context.Context, chat model.Chat, userID []int64) 
 	var id int64
 	err = r.db.QueryRow(ctx, query, args...).Scan(&id)
 	if err != nil {
-		log.Println("Failed to create chat:", err)
+		log.Println("Failed to create chatservice:", err)
 		return 0, err
 	}
 
@@ -71,7 +71,7 @@ func (r *repo) CreateChat(ctx context.Context, chat model.Chat, userID []int64) 
 			return 0, err
 		}
 
-		log.Println("Query to add users to chat:", query, args)
+		log.Println("Query to add users to chatservice:", query, args)
 
 		_, err = r.db.Exec(ctx, query, args...)
 		if err != nil {
@@ -82,7 +82,7 @@ func (r *repo) CreateChat(ctx context.Context, chat model.Chat, userID []int64) 
 	return id, nil
 }
 
-func (r *repo) SendMessage(ctx context.Context, message model.Message) error {
+func (r *repo) SendMessage(ctx context.Context, message model.RepoMessage) error {
 	query, args, err := squirrel.
 		Insert(tableNameMessages).
 		Columns(senderColumnMessages, textColumnMessages, idChatColumnMessages).

@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v5.26.1
-// source: chat.proto
+// source: chatservice.proto
 
 package chat_v1
 
@@ -175,5 +175,5 @@ var ChatV1_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "chat.proto",
+	Metadata: "chatservice.proto",
 }
