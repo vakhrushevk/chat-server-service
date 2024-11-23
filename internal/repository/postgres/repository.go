@@ -28,8 +28,8 @@ type repo struct {
 	db *pgxpool.Pool
 }
 
-// NewRepository - Создаем новый экземлпяр репозитория
-func NewRepository(db *pgxpool.Pool) repository.ChatRepository {
+// NewChatRepository - Создаем новый экземлпяр репозитория
+func NewChatRepository(db *pgxpool.Pool) repository.ChatRepository {
 	return &repo{db: db}
 }
 
