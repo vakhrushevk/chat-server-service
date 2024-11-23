@@ -11,6 +11,7 @@ service ChatV1 {
   rpc CreateChat(CreateChatRequest) returns (CreateChatResponse);
   rpc SendMessage(SendMessageRequest) returns (google.protobuf.Empty);
   rpc DeleteChat(DeleteChatRequest) returns (google.protobuf.Empty);
+  //rpc GetChat(GetChatRequest) returns (GetChatResponse);
 }
 
 message CreateChatRequest {
