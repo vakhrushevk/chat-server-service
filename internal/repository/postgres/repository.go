@@ -3,10 +3,10 @@ package postgres
 import (
 	"context"
 	"errors"
+	db "github.com/vakhrushevk/chat-server-service/internal/client"
 	"log"
 
 	"github.com/Masterminds/squirrel"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/vakhrushevk/chat-server-service/internal/repository"
 	"github.com/vakhrushevk/chat-server-service/internal/repository/model"
 )
@@ -25,18 +25,19 @@ const (
 )
 
 type repo struct {
-	db *pgxpool.Pool
+	db db.Client
 }
 
 // NewChatRepository - Создаем новый экземлпяр репозитория
-func NewChatRepository(db *pgxpool.Pool) repository.ChatRepository {
+func NewChatRepository(db db.Client) repository.ChatRepository {
 	return &repo{db: db}
 }
 
-// CreateChat -
+// CreateChat - Создает чат и заполняет его юзерами? возвращает id чата и ошибку
+// TODO: Добавить транзакцию для создания чата и добавления юзеров
 func (r *repo) CreateChat(ctx context.Context, chat model.RepoChat, userID []int64) (int64, error) {
 	if chat.Name == "" {
-		return 0, errors.New("chatservice name cannot be empty")
+		return 0, errors.New("chat name can't be empty")
 	}
 
 	query, args, err := squirrel.
@@ -47,16 +48,15 @@ func (r *repo) CreateChat(ctx context.Context, chat model.RepoChat, userID []int
 		Suffix("returning id").
 		ToSql()
 
-	log.Println("Generated query to create a new chatservice:", query, args)
-
 	if err != nil {
 		return 0, err
 	}
 
 	var id int64
-	err = r.db.QueryRow(ctx, query, args...).Scan(&id)
+	q := db.Query{Name: "ChatRepository - create", QueryRaw: query}
+
+	err = r.db.DB().QueryRowContext(ctx, q, args...).Scan(&id)
 	if err != nil {
-		log.Println("Failed to create chatservice:", err)
 		return 0, err
 	}
 
@@ -70,10 +70,9 @@ func (r *repo) CreateChat(ctx context.Context, chat model.RepoChat, userID []int
 		if err != nil {
 			return 0, err
 		}
+		q := db.Query{Name: "ChatRepository - create", QueryRaw: query}
 
-		log.Println("Query to add users to chatservice:", query, args)
-
-		_, err = r.db.Exec(ctx, query, args...)
+		_, err = r.db.DB().ExecContext(ctx, q, args...)
 		if err != nil {
 			return 0, err
 		}
@@ -92,24 +91,26 @@ func (r *repo) SendMessage(ctx context.Context, message model.RepoMessage) error
 	if err != nil {
 		return err
 	}
-	_, err = r.db.Exec(ctx, query, args...)
+	q := db.Query{Name: "ChatRepository - SendMessage", QueryRaw: query}
+	_, err = r.db.DB().ExecContext(ctx, q, args...)
 
 	if err != nil {
 		log.Println("Failed to save message:", err)
 		return err
 	}
+
 	return nil
 }
 
-func (r repo) DeleteChat(ctx context.Context, idChat int64) error {
+func (r *repo) DeleteChat(ctx context.Context, idChat int64) error {
 	query, args, err := squirrel.Delete("chat").
 		Where(squirrel.Eq{"id": idChat}).
 		PlaceholderFormat(squirrel.Dollar).ToSql()
 	if err != nil {
 		return err
 	}
-
-	_, err = r.db.Exec(ctx, query, args...)
+	q := db.Query{Name: "ChatRepository - DeleteChat", QueryRaw: query}
+	_, err = r.db.DB().ExecContext(ctx, q, args...)
 	if err != nil {
 		return err
 	}

@@ -14,13 +14,13 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-// App - ...
+// App - Структура ‘App’ представляет собой приложение.
 type App struct {
 	serviceProvider *serviceProvider
 	grpcServer      *grpc.Server
 }
 
-// New - ...
+// New - Функция ‘New’ создает новый экземпляр приложения.
 func New(ctx context.Context) (*App, error) {
 	a := &App{}
 	err := a.initDeps(ctx)
@@ -31,7 +31,7 @@ func New(ctx context.Context) (*App, error) {
 	return a, nil
 }
 
-// Run - ...
+// Run - ‘Run’ метод запускает сервер gRPC.
 func (a *App) Run() error {
 	defer func() {
 		closer.CloseAll()
