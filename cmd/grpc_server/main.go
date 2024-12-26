@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"github.com/vakhrushevk/local-platform/pkg/logger"
 	"log"
 
 	"github.com/vakhrushevk/chat-server-service/internal/app"
@@ -15,6 +16,7 @@ func init() {
 }
 
 func main() {
+	logger.Init()
 	flag.Parse()
 	ctx := context.Background()
 	a, err := app.New(ctx)

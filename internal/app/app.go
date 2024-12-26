@@ -2,10 +2,10 @@ package app
 
 import (
 	"errors"
+	"github.com/vakhrushevk/local-platform/pkg/closer"
 	"log"
 	"net"
 
-	"github.com/vakhrushevk/chat-server-service/internal/closer"
 	"github.com/vakhrushevk/chat-server-service/internal/config"
 	"github.com/vakhrushevk/chat-server-service/pkg/chat_v1"
 	"golang.org/x/net/context"

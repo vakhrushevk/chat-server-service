@@ -3,7 +3,7 @@ package postgres
 import (
 	"context"
 	"errors"
-	db "github.com/vakhrushevk/chat-server-service/internal/client"
+	"github.com/vakhrushevk/local-platform/pkg/db"
 	"log"
 
 	"github.com/Masterminds/squirrel"
@@ -39,7 +39,6 @@ func (r *repo) CreateChat(ctx context.Context, chat model.RepoChat, userID []int
 	if chat.Name == "" {
 		return 0, errors.New("chat name can't be empty")
 	}
-
 	query, args, err := squirrel.
 		Insert(tableNameChat).
 		Columns(nameColumnChat).
@@ -56,6 +55,7 @@ func (r *repo) CreateChat(ctx context.Context, chat model.RepoChat, userID []int
 	q := db.Query{Name: "ChatRepository - create", QueryRaw: query}
 
 	err = r.db.DB().QueryRowContext(ctx, q, args...).Scan(&id)
+
 	if err != nil {
 		return 0, err
 	}
