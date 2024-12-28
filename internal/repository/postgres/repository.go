@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/vakhrushevk/local-platform/pkg/db"
+	"github.com/vakhrushevk/local-platform/pkg/logger"
 	"log"
 
 	"github.com/Masterminds/squirrel"
@@ -35,7 +36,7 @@ func NewChatRepository(db db.Client) repository.ChatRepository {
 
 // CreateChat - Создает чат и заполняет его юзерами? возвращает id чата и ошибку
 // TODO: Добавить транзакцию для создания чата и добавления юзеров
-func (r *repo) CreateChat(ctx context.Context, chat model.RepoChat, userID []int64) (int64, error) {
+func (r *repo) CreateChat(ctx context.Context, chat model.RepoChat) (int64, error) {
 	if chat.Name == "" {
 		return 0, errors.New("chat name can't be empty")
 	}
@@ -55,30 +56,30 @@ func (r *repo) CreateChat(ctx context.Context, chat model.RepoChat, userID []int
 	q := db.Query{Name: "ChatRepository - create", QueryRaw: query}
 
 	err = r.db.DB().QueryRowContext(ctx, q, args...).Scan(&id)
-
 	if err != nil {
 		return 0, err
 	}
 
-	for _, user := range userID {
-		query, args, err = squirrel.
-			Insert(tableNameChatUser).
-			Columns(idUserColumnChatUser, idChatColumnChatUser).
-			PlaceholderFormat(squirrel.Dollar).
-			Values(user, id).
-			ToSql()
-		if err != nil {
-			return 0, err
-		}
-		q := db.Query{Name: "ChatRepository - create", QueryRaw: query}
+	return id, nil
+}
 
-		_, err = r.db.DB().ExecContext(ctx, q, args...)
-		if err != nil {
-			return 0, err
-		}
+func (r *repo) AddUserToChat(ctx context.Context, chatID int64, userID int64) error {
+	query, args, err := squirrel.Insert(tableNameChatUser).
+		Columns(idUserColumnChatUser, idChatColumnChatUser).
+		PlaceholderFormat(squirrel.Dollar).Values(userID, chatID).ToSql()
+
+	if err != nil {
+		logger.Debug("Ошибка на уровне repository")
+		return err
 	}
 
-	return id, nil
+	q := db.Query{Name: "Add User", QueryRaw: query}
+	_, err = r.db.DB().ExecContext(ctx, q, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *repo) SendMessage(ctx context.Context, message model.RepoMessage) error {

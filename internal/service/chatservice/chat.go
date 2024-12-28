@@ -7,11 +7,11 @@ import (
 )
 
 type serv struct {
-	repositoy repository.ChatRepository
-	txManager db.TxManager
+	repository repository.ChatRepository
+	txManager  db.TxManager
 }
 
-// New - TODO: Add description
+// New - creates a new chat level service
 func New(chatRepository repository.ChatRepository, txManager db.TxManager) service.ChatService {
-	return &serv{repositoy: chatRepository, txManager: txManager}
+	return &serv{repository: chatRepository, txManager: txManager}
 }

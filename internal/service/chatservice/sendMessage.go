@@ -11,5 +11,5 @@ import (
 func (s *serv) SendMessage(ctx context.Context, message *model.ServiceMessage) error {
 	// TODO: CheckError
 
-	return s.repositoy.SendMessage(ctx, *converter.FromServiceMessageToRepoMessage(message))
+	return s.repository.SendMessage(ctx, *converter.FromServiceMessageToRepoMessage(message))
 }
