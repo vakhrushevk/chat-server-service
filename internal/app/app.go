@@ -2,10 +2,9 @@ package app
 
 import (
 	"errors"
-	"github.com/vakhrushevk/local-platform/pkg/closer"
-	"github.com/vakhrushevk/local-platform/pkg/logger"
-	"log/slog"
 	"net"
+
+	"github.com/vakhrushevk/local-platform/closer"
 
 	"github.com/vakhrushevk/chat-server-service/internal/config"
 	"github.com/vakhrushevk/chat-server-service/pkg/chat_v1"
@@ -81,7 +80,7 @@ func (a *App) initGRPCService(ctx context.Context) error {
 
 func (a *App) runGRPCServer() error {
 
-	logger.Info("GRPC server is running on ", slog.Any("addres:", a.serviceProvider.GRPCConfig().Address()))
+	//logger.Info("GRPC server is running on ", slog.Any("addres:", a.serviceProvider.GRPCConfig().Address()))
 
 	list, err := net.Listen("tcp", a.serviceProvider.GRPCConfig().Address())
 	if err != nil {

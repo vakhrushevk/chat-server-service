@@ -3,9 +3,9 @@ package postgres
 import (
 	"context"
 	"errors"
-	"github.com/vakhrushevk/local-platform/pkg/db"
-	"github.com/vakhrushevk/local-platform/pkg/logger"
 	"log"
+
+	"github.com/vakhrushevk/local-platform/db"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/vakhrushevk/chat-server-service/internal/repository"
@@ -69,7 +69,6 @@ func (r *repo) AddUserToChat(ctx context.Context, chatID int64, userID int64) er
 		PlaceholderFormat(squirrel.Dollar).Values(userID, chatID).ToSql()
 
 	if err != nil {
-		logger.Debug("Ошибка на уровне repository")
 		return err
 	}
 

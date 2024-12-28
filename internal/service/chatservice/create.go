@@ -3,10 +3,9 @@ package chatservice
 import (
 	"context"
 	"fmt"
+
 	"github.com/vakhrushevk/chat-server-service/internal/service/model"
 	"github.com/vakhrushevk/chat-server-service/internal/service/model/converter"
-	"github.com/vakhrushevk/local-platform/pkg/logger"
-	"github.com/vakhrushevk/local-platform/pkg/logger/sl"
 )
 
 // CreateChat - Create a chat instance from the given configuration
@@ -20,8 +19,8 @@ func (s *serv) CreateChat(ctx context.Context, chat *model.ServiceChat) (int64, 
 			return errTx
 		}
 
-		for _, uId := range chat.UserID {
-			errTx = s.repository.AddUserToChat(ctx, id, uId)
+		for _, UID := range chat.UserID {
+			errTx = s.repository.AddUserToChat(ctx, id, UID)
 			if errTx != nil {
 				return errTx
 			}
@@ -32,7 +31,7 @@ func (s *serv) CreateChat(ctx context.Context, chat *model.ServiceChat) (int64, 
 
 	if err != nil {
 		fmt.Println("[DEBUG] Error: ", err)
-		logger.Error("Error serviceLevel: ", sl.Err(err))
+		//	logger.Error("Error serviceLevel: ", sl.Err(err))
 		return 0, err
 	}
 

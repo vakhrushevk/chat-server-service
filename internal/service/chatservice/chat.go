@@ -3,7 +3,7 @@ package chatservice
 import (
 	"github.com/vakhrushevk/chat-server-service/internal/repository"
 	"github.com/vakhrushevk/chat-server-service/internal/service"
-	"github.com/vakhrushevk/local-platform/pkg/db"
+	"github.com/vakhrushevk/local-platform/db"
 )
 
 type serv struct {

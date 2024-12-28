@@ -2,11 +2,12 @@ package app
 
 import (
 	"context"
-	"github.com/vakhrushevk/local-platform/pkg/closer"
-	"github.com/vakhrushevk/local-platform/pkg/db"
-	"github.com/vakhrushevk/local-platform/pkg/db/pg"
-	"github.com/vakhrushevk/local-platform/pkg/db/transaction"
 	"log"
+
+	"github.com/vakhrushevk/local-platform/closer"
+	"github.com/vakhrushevk/local-platform/db"
+	"github.com/vakhrushevk/local-platform/db/pg"
+	"github.com/vakhrushevk/local-platform/db/transaction"
 
 	"github.com/vakhrushevk/chat-server-service/internal/api/chat"
 	"github.com/vakhrushevk/chat-server-service/internal/config"
