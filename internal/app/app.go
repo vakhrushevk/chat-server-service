@@ -2,10 +2,10 @@ package app
 
 import (
 	"errors"
-	"log"
 	"net"
 
-	"github.com/vakhrushevk/chat-server-service/internal/closer"
+	"github.com/vakhrushevk/local-platform/closer"
+
 	"github.com/vakhrushevk/chat-server-service/internal/config"
 	"github.com/vakhrushevk/chat-server-service/pkg/chat_v1"
 	"golang.org/x/net/context"
@@ -14,13 +14,13 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-// App - ...
+// App - Структура ‘App’ представляет собой приложение.
 type App struct {
 	serviceProvider *serviceProvider
 	grpcServer      *grpc.Server
 }
 
-// New - ...
+// New - Функция ‘New’ создает новый экземпляр приложения.
 func New(ctx context.Context) (*App, error) {
 	a := &App{}
 	err := a.initDeps(ctx)
@@ -31,7 +31,7 @@ func New(ctx context.Context) (*App, error) {
 	return a, nil
 }
 
-// Run - ...
+// Run - ‘Run’ метод запускает сервер gRPC.
 func (a *App) Run() error {
 	defer func() {
 		closer.CloseAll()
@@ -79,7 +79,9 @@ func (a *App) initGRPCService(ctx context.Context) error {
 }
 
 func (a *App) runGRPCServer() error {
-	log.Printf("GRPC server is running on %s", a.serviceProvider.GRPCConfig().Address())
+
+	//logger.Info("GRPC server is running on ", slog.Any("addres:", a.serviceProvider.GRPCConfig().Address()))
+
 	list, err := net.Listen("tcp", a.serviceProvider.GRPCConfig().Address())
 	if err != nil {
 		return err

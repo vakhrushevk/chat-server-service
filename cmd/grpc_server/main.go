@@ -15,6 +15,7 @@ func init() {
 }
 
 func main() {
+
 	flag.Parse()
 	ctx := context.Background()
 	a, err := app.New(ctx)
