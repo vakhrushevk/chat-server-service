@@ -1,17 +1,61 @@
 package chatservice
 
 import (
+	"context"
+	"github.com/vakhrushevk/chat-server-service/internal/converter"
 	"github.com/vakhrushevk/chat-server-service/internal/repository"
 	"github.com/vakhrushevk/chat-server-service/internal/service"
+	"github.com/vakhrushevk/chat-server-service/internal/service/serviceLevelModel"
 	"github.com/vakhrushevk/local-platform/db"
 )
 
-type serv struct {
+type chatService struct {
 	repository repository.ChatRepository
 	txManager  db.TxManager
 }
 
+// AddChatMember - Добавить пользователя в чат
+func (s *chatService) AddChatMember(ctx context.Context, chat *serviceLevelModel.ChatMemberInfo) error {
+	return s.repository.AddChatMember(ctx, converter.ServiceToRepositoryChatMemberInfo(chat))
+}
+
+// RemoveChatMember - Удалить пользователя из чата
+func (s *chatService) RemoveChatMember(ctx context.Context, chat *serviceLevelModel.ChatMemberInfo) error {
+	return s.repository.RemoveChatMember(ctx, converter.ServiceToRepositoryChatMemberInfo(chat))
+}
+
+// ListChatsByIdUser - Получить список чатов пользователя по userID
+// TODO: Переписать, убрать геморой с указателями
+func (s *chatService) ListChatsByIdUser(ctx context.Context, UserID int64) ([]*serviceLevelModel.Chat, error) {
+
+	chats, err := s.repository.ListChatsByIdUser(ctx, UserID)
+	if err != nil {
+		return nil, err
+	}
+	var result []*serviceLevelModel.Chat
+
+	for _, chat := range chats {
+		IDsUser, err := s.repository.ListMemberChat(ctx, chat.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		chServ := serviceLevelModel.Chat{
+			ID:       chat.ID,
+			ChatInfo: converter.RepositoryToServiceChatInfo(&chat.ChatInfo, IDsUser),
+		}
+
+		result = append(result, &chServ)
+	}
+	return result, nil
+}
+
+// DeleteChat - Удалить чат
+func (s *chatService) DeleteChat(ctx context.Context, idChat int64) error {
+	return s.repository.DeleteChat(ctx, idChat)
+}
+
 // New - creates a new chat level service
 func New(chatRepository repository.ChatRepository, txManager db.TxManager) service.ChatService {
-	return &serv{repository: chatRepository, txManager: txManager}
+	return &chatService{repository: chatRepository, txManager: txManager}
 }

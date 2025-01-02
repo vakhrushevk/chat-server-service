@@ -100,7 +100,7 @@ func (s *serviceProvider) ChatService(ctx context.Context) service.ChatService {
 
 func (s *serviceProvider) ChatImplementation(ctx context.Context) *chat.Implementation {
 	if s.chatImplementation == nil {
-		s.chatImplementation = chat.NewImplementation(s.ChatService(ctx))
+		s.chatImplementation = chat.NewChatImplementation(s.ChatService(ctx))
 	}
 	return s.chatImplementation
 }

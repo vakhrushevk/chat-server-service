@@ -2,36 +2,30 @@ package chatservice
 
 import (
 	"context"
-	"fmt"
-
-	"github.com/vakhrushevk/chat-server-service/internal/service/model"
-	"github.com/vakhrushevk/chat-server-service/internal/service/model/converter"
+	"github.com/vakhrushevk/chat-server-service/internal/converter"
+	"github.com/vakhrushevk/chat-server-service/internal/service/serviceLevelModel"
 )
 
-// CreateChat - Create a chat instance from the given configuration
-func (s *serv) CreateChat(ctx context.Context, chat *model.ServiceChat) (int64, error) {
+// CreateChat - Создает чат и добавляет создателя в него
+func (s *chatService) CreateChat(ctx context.Context, chat *serviceLevelModel.ChatInfo) (int64, error) {
 	var id int64
-
 	err := s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
 		var errTx error
-		id, errTx = s.repository.CreateChat(ctx, *converter.FromChatToRepo(chat))
+		id, errTx = s.repository.CreateChat(ctx, converter.ServiceToRepositoryChatInfo(chat))
 		if errTx != nil {
 			return errTx
 		}
 
-		for _, UID := range chat.UserID {
-			errTx = s.repository.AddUserToChat(ctx, id, UID)
-			if errTx != nil {
-				return errTx
-			}
-		}
+		smi := serviceLevelModel.ChatMemberInfo{ChatID: id, UserID: chat.CreatedBy}
+		errTx = s.repository.AddChatMember(ctx, converter.ServiceToRepositoryChatMemberInfo(&smi))
 
+		if errTx != nil {
+			return errTx
+		}
 		return nil
 	})
 
 	if err != nil {
-		fmt.Println("[DEBUG] Error: ", err)
-		//	logger.Error("Error serviceLevel: ", sl.Err(err))
 		return 0, err
 	}
 

@@ -2,16 +2,13 @@ package service
 
 import (
 	"context"
-
-	"github.com/vakhrushevk/chat-server-service/internal/service/model"
+	"github.com/vakhrushevk/chat-server-service/internal/service/serviceLevelModel"
 )
 
-// ChatService - TODO: add description
 type ChatService interface {
-	// CreateChat - Создаем чат,
-	CreateChat(ctx context.Context, chat *model.ServiceChat) (int64, error)
-	// SendMessage - Создает сообщение, возвращает ошибку
-	SendMessage(ctx context.Context, message *model.ServiceMessage) error
-	// DeleteChat - Удалем чат
+	CreateChat(ctx context.Context, chat *serviceLevelModel.ChatInfo) (int64, error)
 	DeleteChat(ctx context.Context, idChat int64) error
+	AddChatMember(ctx context.Context, chat *serviceLevelModel.ChatMemberInfo) error
+	RemoveChatMember(ctx context.Context, chat *serviceLevelModel.ChatMemberInfo) error
+	ListChatsByIdUser(ctx context.Context, UserID int64) ([]*serviceLevelModel.Chat, error)
 }
