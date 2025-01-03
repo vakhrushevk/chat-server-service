@@ -2,10 +2,11 @@ package chatservice
 
 import (
 	"context"
+
 	"github.com/vakhrushevk/chat-server-service/internal/converter"
 	"github.com/vakhrushevk/chat-server-service/internal/repository"
 	"github.com/vakhrushevk/chat-server-service/internal/service"
-	"github.com/vakhrushevk/chat-server-service/internal/service/serviceLevelModel"
+	servicelevelmodel "github.com/vakhrushevk/chat-server-service/internal/service/serviceLevelModel"
 	"github.com/vakhrushevk/local-platform/db"
 )
 
@@ -15,24 +16,24 @@ type chatService struct {
 }
 
 // AddChatMember - Добавить пользователя в чат
-func (s *chatService) AddChatMember(ctx context.Context, chat *serviceLevelModel.ChatMemberInfo) error {
+func (s *chatService) AddChatMember(ctx context.Context, chat *servicelevelmodel.ChatMemberInfo) error {
 	return s.repository.AddChatMember(ctx, converter.ServiceToRepositoryChatMemberInfo(chat))
 }
 
 // RemoveChatMember - Удалить пользователя из чата
-func (s *chatService) RemoveChatMember(ctx context.Context, chat *serviceLevelModel.ChatMemberInfo) error {
+func (s *chatService) RemoveChatMember(ctx context.Context, chat *servicelevelmodel.ChatMemberInfo) error {
 	return s.repository.RemoveChatMember(ctx, converter.ServiceToRepositoryChatMemberInfo(chat))
 }
 
 // ListChatsByIdUser - Получить список чатов пользователя по userID
 // TODO: Переписать, убрать геморой с указателями
-func (s *chatService) ListChatsByIdUser(ctx context.Context, UserID int64) ([]*serviceLevelModel.Chat, error) {
+func (s *chatService) ListChatsByIdUser(ctx context.Context, UserID int64) ([]*servicelevelmodel.Chat, error) {
 
 	chats, err := s.repository.ListChatsByIdUser(ctx, UserID)
 	if err != nil {
 		return nil, err
 	}
-	var result []*serviceLevelModel.Chat
+	var result []*servicelevelmodel.Chat
 
 	for _, chat := range chats {
 		IDsUser, err := s.repository.ListMemberChat(ctx, chat.ID)
@@ -40,7 +41,7 @@ func (s *chatService) ListChatsByIdUser(ctx context.Context, UserID int64) ([]*s
 			return nil, err
 		}
 
-		chServ := serviceLevelModel.Chat{
+		chServ := servicelevelmodel.Chat{
 			ID:       chat.ID,
 			ChatInfo: converter.RepositoryToServiceChatInfo(&chat.ChatInfo, IDsUser),
 		}
