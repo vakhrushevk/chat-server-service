@@ -17,6 +17,7 @@ const (
 	table_chat           = "chat_service.chats"
 	chatColumnCreated_by = "created_by"
 	//columnCreatedAt      = "created_at"
+
 )
 
 type repo struct {
