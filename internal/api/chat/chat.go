@@ -2,6 +2,7 @@ package chat
 
 import (
 	"context"
+
 	"github.com/vakhrushevk/chat-server-service/internal/converter"
 	"github.com/vakhrushevk/chat-server-service/internal/service"
 	"github.com/vakhrushevk/chat-server-service/pkg/chat_v1"

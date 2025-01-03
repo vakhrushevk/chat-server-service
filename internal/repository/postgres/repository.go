@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"errors"
+
 	"github.com/vakhrushevk/chat-server-service/internal/repository"
 	"github.com/vakhrushevk/local-platform/db"
 
@@ -15,7 +16,8 @@ const (
 	chatColumnName       = "name"
 	table_chat           = "chat_service.chats"
 	chatColumnCreated_by = "created_by"
-	columnCreatedAt      = "created_at"
+	//columnCreatedAt      = "created_at"
+
 )
 
 type repo struct {
