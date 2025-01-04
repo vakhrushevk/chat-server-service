@@ -2,6 +2,9 @@ package app
 
 import (
 	"errors"
+	"github.com/vakhrushevk/chat-server-service/internal/logger"
+	"github.com/vakhrushevk/chat-server-service/internal/metric/interceptor"
+	"log/slog"
 	"net"
 
 	"github.com/vakhrushevk/local-platform/closer"
@@ -45,6 +48,7 @@ func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initConfig,
 		a.initServiceProvider,
+		a.initLogger,
 		a.initGRPCService,
 	}
 
@@ -71,8 +75,16 @@ func (a *App) initServiceProvider(_ context.Context) error {
 	return nil
 }
 
+func (a *App) initLogger(_ context.Context) error {
+	a.serviceProvider.InitializeLogger()
+	return nil
+}
+
 func (a *App) initGRPCService(ctx context.Context) error {
-	a.grpcServer = grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
+	a.grpcServer = grpc.NewServer(
+		grpc.UnaryInterceptor(interceptor.MetricInterceptor),
+		grpc.Creds(insecure.NewCredentials()),
+	)
 	reflection.Register(a.grpcServer)
 	chat_v1.RegisterChatV1Server(a.grpcServer, a.serviceProvider.ChatImplementation(ctx))
 	return nil
@@ -80,7 +92,8 @@ func (a *App) initGRPCService(ctx context.Context) error {
 
 func (a *App) runGRPCServer() error {
 
-	//logger.Info("GRPC server is running on ", slog.Any("addres:", a.serviceProvider.GRPCConfig().Address()))
+	logger.Info("GRPC server is running on ",
+		slog.Any("addres:", a.serviceProvider.GRPCConfig().Address()))
 
 	list, err := net.Listen("tcp", a.serviceProvider.GRPCConfig().Address())
 	if err != nil {

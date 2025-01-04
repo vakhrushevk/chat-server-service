@@ -2,8 +2,7 @@ package postgres
 
 import (
 	"context"
-	"errors"
-
+	"github.com/vakhrushevk/chat-server-service/internal/logger"
 	"github.com/vakhrushevk/chat-server-service/internal/repository"
 	"github.com/vakhrushevk/local-platform/db"
 
@@ -31,9 +30,6 @@ func NewChatRepository(db db.Client) repository.ChatRepository {
 
 // CreateChat - Создать чат
 func (r *repo) CreateChat(ctx context.Context, chat *repositoryLevelModel.ChatInfo) (int64, error) {
-	if chat.Name == "" {
-		return 0, errors.New("chat name can't be empty")
-	}
 	query, args, err := squirrel.
 		Insert(table_chat).
 		Columns(chatColumnName, chatColumnCreated_by).
@@ -42,6 +38,7 @@ func (r *repo) CreateChat(ctx context.Context, chat *repositoryLevelModel.ChatIn
 		Suffix("returning id").
 		ToSql()
 	if err != nil {
+		logger.Error("Failed to create chat", logger.ErrAttr(err))
 		return 0, err
 	}
 

@@ -46,3 +46,13 @@ local-migration-down:
 
 local-migration-status:
 	goose -dir ${LOCAL_MIGRATION_DIR} postgres ${LOCAL_MIGRATION_DSN} status -v
+
+grpc-err-load-test:
+	ghz \
+	--proto api/chat_v1/chat.proto \
+	--call chat_v1.ChatV1/CreateChat \
+	--data '{"created_by": "62180", "name": "fugiat do"}' \
+	--rps 1 \
+	--total 10 \
+	--insecure \
+	localhost:50053

@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"github.com/vakhrushevk/chat-server-service/internal/logger"
 	"log"
 
 	"github.com/vakhrushevk/local-platform/closer"
@@ -19,8 +20,9 @@ import (
 )
 
 type serviceProvider struct {
-	pgConfig   config.PgConfig
-	grpcConfig config.GRPCConfig
+	pgConfig     config.PgConfig
+	grpcConfig   config.GRPCConfig
+	loggerConfig config.LogConfig
 
 	dbClient  db.Client
 	txManager db.TxManager
@@ -33,6 +35,10 @@ type serviceProvider struct {
 
 func newServiceProvider() *serviceProvider {
 	return &serviceProvider{}
+}
+
+func (s *serviceProvider) InitializeLogger() {
+	logger.New(s.LogConfig().LoggerLevel())
 }
 
 func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
@@ -69,6 +75,17 @@ func (s *serviceProvider) PGConfig() config.PgConfig {
 		s.pgConfig = cfg
 	}
 	return s.pgConfig
+}
+
+func (s *serviceProvider) LogConfig() config.LogConfig {
+	if s.loggerConfig == nil {
+		cfg, err := env.NewLoggerConfig()
+		if err != nil {
+			log.Fatalf("failed to get logger config: %v", err)
+		}
+		s.loggerConfig = cfg
+	}
+	return s.loggerConfig
 }
 
 func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
