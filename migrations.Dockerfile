@@ -5,15 +5,15 @@ RUN apk update && \
     apk add bash && \
     rm -rf /var/cache/apk/*
 
-ADD http://github.com/pressly/goose/releases/download/v3.14.0/goose_linux_x86_64 /bin/goose
+ADD http://github.com/pressly/goose/releases/download/v3.24.0/goose_linux_x86_64 /bin/goose
 RUN chmod +x /bin/goose
 
 WORKDIR /root
 
-ADD migrations/*.sql migrations/
-ADD migration.sh .
+ADD migrations/*.sql migrations_chat/migrations/
+ADD migrations_chat.sh migrations_chat/
 ADD .env .
 
-RUN chmod +x migration.sh
+RUN chmod +x migrations_chat/migrations_chat.sh
 
-ENTRYPOINT ["bash","migration.sh"]
+ENTRYPOINT ["bash","migrations_chat/migrations_chat.sh"]

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/vakhrushevk/chat-server-service/internal/converter"
+	"github.com/vakhrushevk/chat-server-service/internal/logger"
 	"github.com/vakhrushevk/chat-server-service/internal/service"
 	"github.com/vakhrushevk/chat-server-service/pkg/chat_v1"
 )
@@ -18,7 +19,8 @@ type Implementation struct {
 func (c *Implementation) CreateChat(ctx context.Context, request *chat_v1.CreateChatRequest) (*chat_v1.CreateChatResponse, error) {
 	id, err := c.chatService.CreateChat(ctx, converter.DescToServiceChatInfo(request))
 	if err != nil {
-		// TODO: CHECK ERROR, RETURN ERROR ????
+
+		logger.Error("Error creating chat", logger.ErrAttr(err))
 		return nil, err
 	}
 
